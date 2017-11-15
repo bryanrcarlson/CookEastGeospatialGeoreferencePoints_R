@@ -34,9 +34,9 @@ georef.wgs84.clean.rename.order@data <- transform(georef.wgs84.clean.rename.orde
 rownames(georef.wgs84.clean.rename.order@data) <- 1:nrow(georef.wgs84.clean.rename.order@data)
 
 # Output as geojson
-gj <- geojson_json(georef.wgs84.clean.rename.order)
+#gj <- geojson_json(georef.wgs84.clean.rename.order)
 gj.path <- paste("Output/CookEastGeoreferencePoints_", format(Sys.Date(), "%Y%m%d"),".geojson", sep = "")
-geojson_write(gj, file=gj.path)
+geojson_write(georef.wgs84.clean.rename.order, file=gj.path, precision = 8)
 
 # ---- Create JSON for DocumentDB ----
 # Load geojson file as text
@@ -50,7 +50,7 @@ jstring <- paste('{
                  "schemaVersion":"1.0.0",
                  "metadataId":   "CookEastGeospatialGeoreferencePoints",
                  "fieldId":      "CookEast",
-                 "location":     ',geoJsonString,'
+                 "location":     ',minify(geoJsonString),'
                  }')
 
 j <- jq(jstring, ".")
