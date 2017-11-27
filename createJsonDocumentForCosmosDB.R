@@ -28,14 +28,26 @@ georef.wgs84.clean <- georef.wgs84[,!(names(georef.wgs84) %in% drops)]
 # Rename columns
 georef.wgs84.clean.rename <- rename(georef.wgs84.clean, c("COLUMN"="Column", "ROW2"="Row2", "STRIP"="Strip", "FIELD"="Field"))
 
+## TESTING ----
+#t <- georef.wgs84.clean.rename[order(georef.wgs84.clean.rename$ID2),]
+#t[t$ID2 == 18,]
+#t <- t[order(t$ID2),]
+#t[t$ID2 == 18,]
+#row.names(t@data) <- NULL
+#t[t$ID2 == 18,]
+#geojson_write(t, file="Output/testjson", precision = 8)
+##---
+
 # Order values
 georef.wgs84.clean.rename.order <- georef.wgs84.clean.rename[order(georef.wgs84.clean.rename$ID2),]
-georef.wgs84.clean.rename.order@data <- transform(georef.wgs84.clean.rename.order@data, ID2 = as.numeric(ID2))
-rownames(georef.wgs84.clean.rename.order@data) <- 1:nrow(georef.wgs84.clean.rename.order@data)
+
+# Reset index
+row.names(georef.wgs84.clean.rename.order@data) <- NULL
 
 # Output as geojson
 #gj <- geojson_json(georef.wgs84.clean.rename.order)
-gj.path <- paste("Output/CookEastGeoreferencePoints_", format(Sys.Date(), "%Y%m%d"),".geojson", sep = "")
+date.today <- format(Sys.Date(), "%Y%m%d")
+gj.path <- paste("Output/CookEastGeoreferencePoints_", date.today,".geojson", sep = "")
 geojson_write(georef.wgs84.clean.rename.order, file=gj.path, precision = 8)
 
 # ---- Create JSON for DocumentDB ----
@@ -44,7 +56,7 @@ geoJsonString <- readLines(gj.path)
 
 jstring <- paste('{
                  "partitionKey": "CookEast_SurveyPoint_GeoreferencePoints",
-                 "id":           "CookEast_GeoreferencePoints_171117",
+                 "id":           "CookEast_GeoreferencePoints_',date.today,'",
                  "type":         "SurveyPoint",
                  "name":         "GeoreferencePoints",
                  "schemaVersion":"1.0.0",
