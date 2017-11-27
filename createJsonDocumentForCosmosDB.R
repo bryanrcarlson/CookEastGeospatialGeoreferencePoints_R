@@ -1,6 +1,6 @@
 # Author: Bryan Carlson
 # Contact: bryan.carlson@ars.usda.gov
-# Purpose: Remove projection from georef points
+# Purpose: Remove projection from georef points, clean data, create json document for import into CosmosDB
 
 library(rgdal)
 library(geojsonio)
@@ -28,16 +28,6 @@ georef.wgs84.clean <- georef.wgs84[,!(names(georef.wgs84) %in% drops)]
 # Rename columns
 georef.wgs84.clean.rename <- rename(georef.wgs84.clean, c("COLUMN"="Column", "ROW2"="Row2", "STRIP"="Strip", "FIELD"="Field"))
 
-## TESTING ----
-#t <- georef.wgs84.clean.rename[order(georef.wgs84.clean.rename$ID2),]
-#t[t$ID2 == 18,]
-#t <- t[order(t$ID2),]
-#t[t$ID2 == 18,]
-#row.names(t@data) <- NULL
-#t[t$ID2 == 18,]
-#geojson_write(t, file="Output/testjson", precision = 8)
-##---
-
 # Order values
 georef.wgs84.clean.rename.order <- georef.wgs84.clean.rename[order(georef.wgs84.clean.rename$ID2),]
 
@@ -45,7 +35,6 @@ georef.wgs84.clean.rename.order <- georef.wgs84.clean.rename[order(georef.wgs84.
 row.names(georef.wgs84.clean.rename.order@data) <- NULL
 
 # Output as geojson
-#gj <- geojson_json(georef.wgs84.clean.rename.order)
 date.today <- format(Sys.Date(), "%y%m%d")
 gj.path <- paste("Output/CookEastGeoreferencePoints_", date.today,".geojson", sep = "")
 geojson_write(georef.wgs84.clean.rename.order, file=gj.path, precision = 8)
